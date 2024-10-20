@@ -1,0 +1,71 @@
+name: Build and Release EXE
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+  release:
+    types: [published]
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      # Checkout the code
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Set up Visual Studio (uses the latest available Visual Studio version)
+      - name: Set up MSBuild
+        uses: microsoft/setup-msbuild@v1
+
+      - name: Set up NuGet
+        uses: NuGet/setup-nuget@v1
+
+      # Restore dependencies (NuGet)
+      - name: Restore NuGet packages
+        run: nuget restore RBXAltManager.sln
+
+      # Build the project (replace with the appropriate solution file)
+      - name: Build the solution
+        run: msbuild RBXAltManager.sln /p:Configuration=Release
+
+      # Create a zip file with the built .exe (adjust the path as needed)
+      - name: Package the EXE
+        run: |
+          mkdir build_output
+          cp path/to/your/output/folder/*.exe build_output/
+          cd build_output
+          powershell Compress-Archive -Path * -DestinationPath ../RBXAccountManager.zip
+
+      # Upload the build output as an artifact
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v3
+        with:
+          name: exe-build
+          path: RBXAccountManager.zip
+
+  release:
+    needs: build
+    runs-on: ubuntu-latest
+
+    steps:
+      # Checkout the repository (to access files for the release)
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      # Download the build artifact (the zip file)
+      - name: Download build artifact
+        uses: actions/download-artifact@v3
+        with:
+          name: exe-build
+
+      # Create a release with the zip file
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        with:
+          files: RBXAccountManager.zip
+        env:
+          GITHUB_TOKEN: ${{ github.token }}
