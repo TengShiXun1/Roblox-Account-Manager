@@ -28,6 +28,10 @@ jobs:
       - name: Restore NuGet packages
         run: nuget restore 'RBXAltManager.sln'
 
+      # Install missing CefSharp packages manually if needed
+      - name: Install missing NuGet packages
+        run: nuget install CefSharp.Common -Version 109.1.110 -OutputDirectory packages
+
       # Build the project (replace with the appropriate solution file)
       - name: Build the solution
         run: msbuild 'RBXAltManager.sln' /p:Configuration=Release
