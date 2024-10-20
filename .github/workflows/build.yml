@@ -26,11 +26,11 @@ jobs:
 
       # Restore dependencies (NuGet)
       - name: Restore NuGet packages
-        run: nuget restore RBXAltManager.sln
+        run: nuget restore 'RBXAltManager.sln'
 
       # Build the project (replace with the appropriate solution file)
       - name: Build the solution
-        run: msbuild RBXAltManager.sln /p:Configuration=Release
+        run: msbuild 'RBXAltManager.sln' /p:Configuration=Release
 
       # Create a zip file with the built .exe (adjust the path as needed)
       - name: Package the EXE
@@ -38,14 +38,14 @@ jobs:
           mkdir build_output
           cp path/to/your/output/folder/*.exe build_output/
           cd build_output
-          powershell Compress-Archive -Path * -DestinationPath ../RBXAccountManager.zip
+          powershell Compress-Archive -Path * -DestinationPath ../your-project-build.zip
 
       # Upload the build output as an artifact
       - name: Upload build artifact
         uses: actions/upload-artifact@v3
         with:
           name: exe-build
-          path: RBXAccountManager.zip
+          path: your-project-build.zip
 
   release:
     needs: build
@@ -66,6 +66,6 @@ jobs:
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
-          files: RBXAccountManager.zip
+          files: your-project-build.zip
         env:
           GITHUB_TOKEN: ${{ github.token }}
