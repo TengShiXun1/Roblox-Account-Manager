@@ -40,7 +40,7 @@ jobs:
       - name: Package the EXE
         run: |
           mkdir build_output
-          cp path/to/your/output/folder/*.exe build_output/
+          cp "RBX Alt Manager/bin/Release/*.exe" build_output/
           cd build_output
           powershell Compress-Archive -Path * -DestinationPath ../your-project-build.zip
 
