@@ -13,6 +13,18 @@ jobs:
     - name: Set up NuGet
       uses: nuget/setup-nuget@v1
 
+    - name: Restore NuGet Packages
+      run: |
+        nuget restore "$Env:GITHUB_WORKSPACE\RBXAltManager.sln"
+        dotnet restore
+      shell: pwsh
+
+    - name: Install Missing NuGet Packages
+      run: |
+        dotnet add "RBX Alt Manager/RBX Alt Manager.csproj" package CefSharp.Common --version 109.1.110
+        dotnet add "RBX Alt Manager/RBX Alt Manager.csproj" package Costura.Fody --version 5.7.0
+      shell: pwsh
+
     - name: Set up MSBuild
       uses: microsoft/setup-msbuild@v1.3.1
 
@@ -24,12 +36,6 @@ jobs:
     - name: Build the Solution
       run: MSBuild.exe "$Env:GITHUB_WORKSPACE\RBXAltManager.sln" -p:Configuration=Release
       timeout-minutes: 5
-
-    - name: Create Archive
-      run: |
-        cd "$Env:GITHUB_WORKSPACE"
-        tar -a -cvf RobloxAccountManager.zip -C "RBX Alt Manager/bin/Release" .
-      shell: pwsh
 
     - name: Create a Release
       id: create_release
@@ -49,6 +55,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: ./RobloxAccountManager.zip
-        asset_name: RobloxAccountManager.zip
-        asset_content_type: application/zip
+        asset_path: RBX Alt Manager/bin/Release
+        asset_name: RBXAltManagerBuild
+        asset_content_type: application/octet-stream
