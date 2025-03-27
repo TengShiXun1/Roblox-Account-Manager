@@ -14,24 +14,15 @@ jobs:
       uses: nuget/setup-nuget@v1
 
     - name: Restore NuGet Packages
-      run: |
-        nuget restore "$Env:GITHUB_WORKSPACE\RBXAltManager.sln"
-        dotnet restore
-      shell: pwsh
-
-    - name: Install Missing NuGet Packages
-      run: |
-        dotnet add "RBX Alt Manager/RBX Alt Manager.csproj" package CefSharp.Common --version 109.1.110
-        dotnet add "RBX Alt Manager/RBX Alt Manager.csproj" package Costura.Fody --version 5.7.0
+      run: nuget restore "$Env:GITHUB_WORKSPACE\RBXAltManager.sln"
       shell: pwsh
 
     - name: Set up MSBuild
       uses: microsoft/setup-msbuild@v1.3.1
 
-    - name: Ensure Packages Folder Exists
-      run: |
-        if (-Not (Test-Path "$Env:GITHUB_WORKSPACE\packages")) { mkdir "$Env:GITHUB_WORKSPACE\packages" }
-      shell: pwsh
+    - name: Restore Dependencies with MSBuild
+      run: MSBuild.exe "$Env:GITHUB_WORKSPACE\RBXAltManager.sln" -t:restore
+      timeout-minutes: 3
 
     - name: Build the Solution
       run: MSBuild.exe "$Env:GITHUB_WORKSPACE\RBXAltManager.sln" -p:Configuration=Release
