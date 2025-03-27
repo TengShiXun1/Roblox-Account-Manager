@@ -1,4 +1,4 @@
-name: build
+name: Build and Release
 
 on: [push]
 
@@ -7,7 +7,7 @@ jobs:
     runs-on: windows-latest
 
     steps:
-    - name: Checkout repository
+    - name: Checkout Repository
       uses: actions/checkout@v4
 
     - name: Set up NuGet
@@ -20,18 +20,25 @@ jobs:
     - name: Set up MSBuild
       uses: microsoft/setup-msbuild@v1.3.1
 
-    - name: Build the Solution
-      run: MSBuild.exe "$Env:GITHUB_WORKSPACE\RBXAltManager.sln" /p:Configuration=Release /p:Platform="Any CPU"
-      timeout-minutes: 5
+    - name: Build Solution
+      run: msbuild "$Env:GITHUB_WORKSPACE\RBXAltManager.sln" /p:Configuration=Release /p:Platform="Any CPU"
+      shell: cmd
 
-    - name: Create a Release
+    - name: Upload Build Artifacts
+      uses: actions/upload-artifact@v3
+      with:
+        name: BuildOutput
+        path: |
+          ${{ github.workspace }}\RBX Alt Manager\bin\Release\
+
+    - name: Create GitHub Release
       id: create_release
       uses: actions/create-release@v1
-      env: 
+      env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         tag_name: release-${{ github.sha }}
-        release_name: Build
+        release_name: Release Build
         draft: false
         prerelease: false
 
@@ -42,6 +49,6 @@ jobs:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       with:
         upload_url: ${{ steps.create_release.outputs.upload_url }}
-        asset_path: "RBX Alt Manager/bin/Release"
-        asset_name: RBXAltManagerBuild
+        asset_path: ${{ github.workspace }}\RBX Alt Manager\bin\Release\RBX Alt Manager.exe
+        asset_name: RBX-Alt-Manager.exe
         asset_content_type: application/octet-stream
