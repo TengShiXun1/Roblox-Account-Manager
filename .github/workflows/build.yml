@@ -13,8 +13,9 @@ jobs:
     - name: Set up NuGet
       uses: nuget/setup-nuget@v1
     - name: Restore NuGet Packages
-      run: nuget restore $Env:GITHUB_WORKSPACE\RBXAltManager.sln
-      run: dotnet restore
+      run: |
+        nuget restore $Env:GITHUB_WORKSPACE\RBXAltManager.sln
+        dotnet restore
     - name: Set up MSBuild
       uses: microsoft/setup-msbuild@v1.0.2
     - name: Build the Solution
