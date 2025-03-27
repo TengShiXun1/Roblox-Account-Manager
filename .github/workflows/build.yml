@@ -13,11 +13,11 @@ jobs:
     - name: Set up NuGet
       uses: nuget/setup-nuget@v1
     - name: Restore NuGet Packages
-      run: |
-        nuget restore $Env:GITHUB_WORKSPACE\RBXAltManager.sln
-        dotnet restore
+      run: nuget restore $Env:GITHUB_WORKSPACE\RBXAltManager.sln
     - name: Set up MSBuild
       uses: microsoft/setup-msbuild@v1.0.2
+    - name: Install CefSharp.Common
+      run: dotnet add package CefSharp.Common --version 109.1.110
     - name: Build the Solution
       run: MSBuild.exe $Env:GITHUB_WORKSPACE\RBXAltManager.sln -p:Configuration=Release
       timeout-minutes: 5
