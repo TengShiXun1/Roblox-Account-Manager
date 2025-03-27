@@ -7,6 +7,8 @@ jobs:
     runs-on: windows-latest
 
     steps:
+    - name: Checkout Repository
+      uses: actions/checkout@v4
 
     - name: Set up NuGet
       uses: nuget/setup-nuget@v1
@@ -23,7 +25,7 @@ jobs:
       shell: cmd
 
     - name: Upload Build Artifacts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: BuildOutput
         path: |
