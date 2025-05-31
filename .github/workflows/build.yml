@@ -1,29 +1,36 @@
-name: Build RBXAltManager
+name: Build .NET Project
 
 on:
   push:
     branches: [ main ]
-  workflow_dispatch:
+  pull_request:
+    branches: [ main ]
 
 jobs:
   build:
-    runs-on: windows-2022
+    runs-on: windows-latest
 
     steps:
-    - name: Checkout source code
-      uses: actions/checkout@v3
+    - name: Checkout code
+      uses: actions/checkout@v4
 
-    - name: Setup NuGet
-      uses: NuGet/setup-nuget@v1
-
-    - name: Restore NuGet packages
-      run: nuget restore RBXAltManager.sln
-
-    - name: Build with MSBuild
-      run: msbuild RBXAltManager.sln /p:Configuration=Release
-
-    - name: Upload Build Output
-      uses: actions/upload-artifact@v3.1.2
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
       with:
-        name: RBXAltManager
-        path: "**/bin/Release/"
+        dotnet-version: '8.0.0'
+
+    - name: Restore dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release
+
+    - name: Publish EXE
+      run: dotnet publish -c Release -r win-x64 --self-contained true -p:PublishSingleFile=true -o ./publish
+      # Adjust -r win-x64 for your target runtime (win-x64, win-x86, etc.)
+
+    - name: Upload EXE artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: roblox-account-manager-exe
+        path: ./publish/*
