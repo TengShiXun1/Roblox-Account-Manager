@@ -1,14 +1,17 @@
-name: Test Build
+name: Build RBXAltManager
 
 on:
+  push:
+    branches: [ main ]
   workflow_dispatch:
 
 jobs:
   build:
-    runs-on: windows-latest
+    runs-on: windows-2022
 
     steps:
-    - uses: actions/checkout@v3
+    - name: Checkout source code
+      uses: actions/checkout@v3
 
     - name: Setup NuGet
       uses: NuGet/setup-nuget@v1
@@ -19,7 +22,7 @@ jobs:
     - name: Build with MSBuild
       run: msbuild RBXAltManager.sln /p:Configuration=Release
 
-    - name: Upload Artifact
+    - name: Upload Build Output
       uses: actions/upload-artifact@v3.1.2
       with:
         name: RBXAltManager
